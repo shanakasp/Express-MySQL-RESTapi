@@ -149,3 +149,50 @@ app.get("/tickets", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+app.put("/tickets/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { title, description, active } = req.body;
+
+    // Check if title and description are provided
+    if (!title || !description) {
+      return res
+        .status(400)
+        .json({ error: "Title and Description are mandatory" });
+    }
+
+    // If active is not provided, default it to true
+    const isActive = active !== undefined ? active : true;
+
+    // Check if the 'active' field is a boolean
+    if (typeof isActive !== "boolean") {
+      return res
+        .status(400)
+        .json({ error: "'active' field must be a boolean" });
+    }
+
+    // SQL query to update the ticket in the database
+    const sql =
+      "UPDATE tickets SET title = ?, description = ?, active = ? WHERE id = ?";
+    const values = [title, description, isActive, id];
+
+    // Execute the SQL query using queryPromise function
+    await queryPromise(sql, values);
+
+    // Return success response
+    res.status(200).json({
+      message: "Ticket updated successfully",
+      ticket: {
+        id,
+        title,
+        description,
+        active: isActive,
+      },
+    });
+  } catch (error) {
+    // Handle errors
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
