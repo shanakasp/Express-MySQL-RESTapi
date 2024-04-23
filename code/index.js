@@ -114,3 +114,19 @@ app.get("/tickets/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+app.get("/tickets", async (req, res) => {
+  try {
+    const sql = "SELECT * FROM tickets";
+
+    const result = await queryPromise(sql, []);
+    if (result.length === 0) {
+      return res.status(404).json({ error: "Ticket not found" });
+    }
+
+    res.status(200).json(result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
