@@ -97,6 +97,25 @@ app.post("/tickets", async (req, res) => {
   }
 });
 
+app.get("/tickets/search", async (req, res) => {
+  try {
+    const { searchTerm } = req.query;
+
+    const sql =
+      "SELECT * FROM tickets WHERE title LIKE ? OR description LIKE ?";
+    const values = [`%${searchTerm}%`, `%${searchTerm}%`];
+
+    const result = await queryPromise(sql, values);
+
+    // Send the query results as a response
+    res.status(200).json(result);
+  } catch (error) {
+    // Handle errors
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 app.get("/tickets/:id", async (req, res) => {
   try {
     const { id } = req.params;
