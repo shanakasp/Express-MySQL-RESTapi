@@ -196,3 +196,22 @@ app.put("/tickets/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+app.delete("/tickets/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    // SQL query to delete the ticket from the database
+    const sql = "DELETE FROM tickets WHERE id = ?";
+
+    // Execute the SQL query using queryPromise function
+    await queryPromise(sql, [id]);
+
+    // Return success response
+    res.status(200).json({ message: "Ticket deleted successfully" });
+  } catch (error) {
+    // Handle errors
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
